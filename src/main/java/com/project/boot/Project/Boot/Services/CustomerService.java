@@ -1,7 +1,6 @@
 package com.project.boot.Project.Boot.Services;
 
 import com.project.boot.Project.Boot.Entity.Customer;
-import com.project.boot.Project.Boot.Entity.UsernamePassword;
 import com.project.boot.Project.Boot.Repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
