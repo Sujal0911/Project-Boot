@@ -34,9 +34,12 @@ public class BusinessService {
     }
 
     public Business changeFirstName(Business business1){
+        if(business1.getFirstName() == null || business1.getFirstName().trim() == ""){
+            return null;
+        }
         Business business = businessRepository.findBusinessByUserID(business1.getUserID());
         if(business != null){
-            business.setFirstName(business1.getFirstName());
+            business.setFirstName(business1.getFirstName().trim());
             businessRepository.save(business);
             return business;
 }
@@ -46,9 +49,12 @@ public class BusinessService {
     }
 
     public Business changeLastName(Business business1){
+        if(business1.getLastName() == null || business1.getLastName().trim() == ""){
+            return null;
+        }
         Business business = businessRepository.findBusinessByUserID(business1.getUserID());
         if(business != null){
-            business.setLastName(business1.getFirstName());
+            business.setLastName(business1.getLastName().trim());
             businessRepository.save(business);
             return business;
         }
@@ -58,9 +64,12 @@ public class BusinessService {
     }
 
     public Business changeEmail(Business business1){
+        if(business1.getEmail() == null || business1.getEmail().trim() == "" || business1.getEmail().substring(business1.getEmail().length()-10) != "@gmail.com"){
+            return null;
+        }
         Business business = businessRepository.findBusinessByUserID(business1.getUserID());
         if(business != null){
-            business.setEmail(business1.getFirstName());
+            business.setEmail(business1.getEmail().trim());
             businessRepository.save(business);
             return business;
         }
@@ -72,7 +81,7 @@ public class BusinessService {
     public Business changeAddress(Business business1){
         Business business = businessRepository.findBusinessByUserID(business1.getUserID());
         if(business != null){
-            business.setAddress(business1.getFirstName());
+            business.setAddress(business1.getAddress().trim());
             businessRepository.save(business);
             return business;
         }
@@ -93,9 +102,12 @@ public class BusinessService {
     }
 
     public Business changePan(Business business1){
+        if(business1.getPan() == null || business1.getPan().trim() == ""){
+            return null;
+        }
         Business business = businessRepository.findBusinessByUserID(business1.getUserID());
         if(business != null){
-            business.setPAN(business1.getPAN());
+            business.setPan(business1.getPan().trim());
             businessRepository.save(business);
             return business;
         }
@@ -105,9 +117,12 @@ public class BusinessService {
     }
 
     public Business changeGst(Business business1){
+        if(business1.getGst() == null || business1.getGst().trim() == ""){
+            return null;
+        }
         Business business = businessRepository.findBusinessByUserID(business1.getUserID());
         if(business != null){
-            business.setGST(business1.getPAN());
+            business.setGst(business1.getGst().trim());
             businessRepository.save(business);
             return business;
         }

@@ -9,7 +9,6 @@ import java.util.List;
 @Service
 public class CustomerService {
 
-
     private final CustomerRepository customerRepository;
 
     public CustomerService(CustomerRepository customerRepository){
@@ -25,9 +24,12 @@ public class CustomerService {
     }
 
     public Customer changeFirstName(Customer customer1){
+        if(customer1.getFirstName() == null || customer1.getFirstName().trim() == ""){
+            return null;
+        }
         Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
         if(customer != null){
-            customer.setFirstName(customer1.getFirstName());
+            customer.setFirstName(customer1.getFirstName().trim());
             customerRepository.save(customer);
             return customer;
         }
@@ -37,9 +39,12 @@ public class CustomerService {
     }
 
     public Customer changeLastName(Customer customer1){
+        if(customer1.getLastName() == null || customer1.getLastName().trim() == ""){
+            return null;
+        }
         Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
         if(customer != null){
-            customer.setLastName(customer1.getFirstName());
+            customer.setLastName(customer1.getLastName().trim());
             customerRepository.save(customer);
             return customer;
         }
@@ -49,9 +54,12 @@ public class CustomerService {
     }
 
     public Customer changeEmail(Customer customer1){
+        if(customer1.getEmail() == null || customer1.getEmail().trim() == ""){
+            return null;
+        }
         Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
         if(customer != null){
-            customer.setEmail(customer1.getFirstName());
+            customer.setEmail(customer1.getEmail().trim());
             customerRepository.save(customer);
             return customer;
         }
@@ -61,9 +69,12 @@ public class CustomerService {
     }
 
     public Customer changeAddress(Customer customer1){
+        if(customer1.getAddress() == null || customer1.getAddress().trim() == ""){
+            return null;
+        }
         Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
         if(customer != null){
-            customer.setAddress(customer1.getFirstName());
+            customer.setAddress(customer1.getAddress().trim());
             customerRepository.save(customer);
             return customer;
         }
@@ -73,6 +84,9 @@ public class CustomerService {
     }
 
     public Customer changeContact(Customer customer1){
+        if(customer1.getContactNo() == null){
+            return null;
+        }
         Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
         if(customer != null){
             customer.setContactNo(customer1.getContactNo());
@@ -85,6 +99,9 @@ public class CustomerService {
     }
 
     public Customer changeAge(Customer customer1){
+        if(customer1.getAge() == null || customer1.getAge() < 18){
+            return null;
+        }
         Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
         if(customer != null){
             customer.setAge(customer1.getAge());
