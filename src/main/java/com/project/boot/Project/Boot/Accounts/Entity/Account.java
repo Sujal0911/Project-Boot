@@ -1,12 +1,16 @@
 package com.project.boot.Project.Boot.Accounts.Entity;
 
+import com.project.boot.Project.Boot.Enums.AccountRole;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @MappedSuperclass
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public abstract class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,7 +22,7 @@ public abstract class Account {
     @Column(nullable = false)
     private String firstName;
     private String lastName;
-
+    private AccountRole role;
     private Integer age;
     @Column(nullable = false)
     private String email;

@@ -1,7 +1,12 @@
 package com.project.boot.Project.Boot.Accounts.Service;
 
+import com.project.boot.Project.Boot.Accounts.DTO.CustomerDTO;
 import com.project.boot.Project.Boot.Accounts.Entity.Customer;
 import com.project.boot.Project.Boot.Accounts.Repository.CustomerRepository;
+import com.project.boot.Project.Boot.Enums.AccountRole;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,107 +15,75 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(CustomerRepository customerRepository){
+    public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder){
         this.customerRepository = customerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public Boolean createAccount(Customer customer){
+    public Customer createAdminAccount(Customer customer){
         if(customerRepository.existsCustomerByUserID(customer.getUserID())){
-            return false;
+            return null;
         }
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        customer.setRole(AccountRole.ADMIN);
         customerRepository.save(customer);
-        return true;
+        return customer;
     }
 
-    public Customer changeFirstName(Customer customer1){
-        if(customer1.getFirstName() == null || customer1.getFirstName().trim() == ""){
+    public Customer createUserAccount(Customer customer){
+        if(customerRepository.existsCustomerByUserID(customer.getUserID())){
             return null;
         }
-        Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
-        if(customer != null){
-            customer.setFirstName(customer1.getFirstName().trim());
-            customerRepository.save(customer);
-            return customer;
-        }
-        else{
-            return null;
-        }
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        customer.setRole(AccountRole.USER);
+        customerRepository.save(customer);
+        return customer;
     }
 
-    public Customer changeLastName(Customer customer1){
-        if(customer1.getLastName() == null || customer1.getLastName().trim() == ""){
-            return null;
-        }
-        Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
-        if(customer != null){
-            customer.setLastName(customer1.getLastName().trim());
-            customerRepository.save(customer);
-            return customer;
-        }
-        else{
-            return null;
-        }
-    }
+    public Customer updateCustomer(CustomerDTO request){
 
-    public Customer changeEmail(Customer customer1){
-        if(customer1.getEmail() == null || customer1.getEmail().trim() == ""){
-            return null;
-        }
-        Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
-        if(customer != null){
-            customer.setEmail(customer1.getEmail().trim());
-            customerRepository.save(customer);
-            return customer;
-        }
-        else{
-            return null;
-        }
-    }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-    public Customer changeAddress(Customer customer1){
-        if(customer1.getAddress() == null || customer1.getAddress().trim() == ""){
-            return null;
-        }
-        Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
-        if(customer != null){
-            customer.setAddress(customer1.getAddress().trim());
-            customerRepository.save(customer);
-            return customer;
-        }
-        else{
-            return null;
-        }
-    }
+        Customer customer = customerRepository
+                .findCustomerByUserID(auth.getName());
 
-    public Customer changeContact(Customer customer1){
-        if(customer1.getContactNo() == null){
-            return null;
-        }
-        Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
-        if(customer != null){
-            customer.setContactNo(customer1.getContactNo());
-            customerRepository.save(customer);
-            return customer;
-        }
-        else{
-            return null;
-        }
-    }
+        System.out.println(customer.getUserID() + " " + customer.getPassword());
 
-    public Customer changeAge(Customer customer1){
-        if(customer1.getAge() == null || customer1.getAge() < 18){
+        if(customer == null){
             return null;
         }
-        Customer customer = customerRepository.findCustomerByUserID(customer1.getUserID());
-        if(customer != null){
-            customer.setAge(customer1.getAge());
-            customerRepository.save(customer);
-            return customer;
+
+        if(request.getFirstName() != null && !request.getFirstName().trim().isEmpty()){
+            customer.setFirstName(request.getFirstName().trim());
         }
-        else{
-            return null;
+
+        if(request.getLastName() != null && !request.getLastName().trim().isEmpty()){
+            customer.setLastName(request.getLastName().trim());
         }
+
+        if(request.getPassword() != null && !request.getPassword().trim().isEmpty()){
+            customer.setPassword(passwordEncoder.encode(request.getPassword().trim()));
+        }
+
+        if(request.getEmail() != null && !request.getEmail().trim().isEmpty()){
+            customer.setEmail(request.getEmail().trim());
+        }
+
+        if(request.getAddress() != null && !request.getAddress().trim().isEmpty()){
+            customer.setAddress(request.getAddress().trim());
+        }
+
+        if(request.getContactNo() != null){
+            customer.setContactNo(request.getContactNo());
+        }
+
+        if(request.getAge() != null && request.getAge() >= 18){
+            customer.setAge(request.getAge());
+        }
+
+        return customerRepository.save(customer);
     }
 
     public List<Customer> allAccounts(){

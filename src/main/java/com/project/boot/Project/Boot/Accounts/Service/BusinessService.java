@@ -1,10 +1,14 @@
 package com.project.boot.Project.Boot.Accounts.Service;
 
+import com.project.boot.Project.Boot.Accounts.DTO.BusinessDTO;
 import com.project.boot.Project.Boot.Accounts.Entity.Business;
-import com.project.boot.Project.Boot.Accounts.Entity.Customer;
 import com.project.boot.Project.Boot.BusinessFeatures.Entity.Services;
 import com.project.boot.Project.Boot.Accounts.Repository.BusinessRepository;
 import com.project.boot.Project.Boot.BusinessFeatures.Repository.ServicesRepository;
+import com.project.boot.Project.Boot.Enums.AccountRole;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,119 +20,86 @@ public class BusinessService {
 
     private final BusinessRepository businessRepository;
     private final ServicesRepository servicesRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public BusinessService(BusinessRepository businessRepository, ServicesRepository servicesRepository) {
+    public BusinessService(BusinessRepository businessRepository, ServicesRepository servicesRepository, PasswordEncoder passwordEncoder) {
         this.businessRepository = businessRepository;
         this.servicesRepository = servicesRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Methods
 
-    public boolean createAccount(Business business){
+    public Business createUserAccount(Business business){
         if(businessRepository.existsBusinessByUserID(business.getUserID())){
-            return false;
+            return null;
         }
+        business.setPassword(passwordEncoder.encode(business.getPassword()));
+        business.setRole(AccountRole.USER);
         businessRepository.save(business);
-        return true;
+        return business;
     }
 
-    public Business changeFirstName(Business business1){
-        if(business1.getFirstName() == null || business1.getFirstName().trim() == ""){
+    public Business createAdminAccount(Business business){
+        if(businessRepository.existsBusinessByUserID(business.getUserID())){
             return null;
         }
-        Business business = businessRepository.findBusinessByUserID(business1.getUserID());
-        if(business != null){
-            business.setFirstName(business1.getFirstName().trim());
-            businessRepository.save(business);
-            return business;
-}
-        else{
-            return null;
-        }
+        business.setPassword(passwordEncoder.encode(business.getPassword()));
+        business.setRole(AccountRole.ADMIN);
+        businessRepository.save(business);
+        return business;
     }
 
-    public Business changeLastName(Business business1){
-        if(business1.getLastName() == null || business1.getLastName().trim() == ""){
-            return null;
-        }
-        Business business = businessRepository.findBusinessByUserID(business1.getUserID());
-        if(business != null){
-            business.setLastName(business1.getLastName().trim());
-            businessRepository.save(business);
-            return business;
-        }
-        else{
-            return null;
-        }
-    }
 
-    public Business changeEmail(Business business1){
-        if(business1.getEmail() == null || business1.getEmail().trim() == "" || business1.getEmail().substring(business1.getEmail().length()-10) != "@gmail.com"){
+    public Business updateBusiness(BusinessDTO request){
+        if(request.getUserID() == null)
             return null;
-        }
-        Business business = businessRepository.findBusinessByUserID(business1.getUserID());
-        if(business != null){
-            business.setEmail(business1.getEmail().trim());
-            businessRepository.save(business);
-            return business;
-        }
-        else{
-            return null;
-        }
-    }
 
-    public Business changeAddress(Business business1){
-        Business business = businessRepository.findBusinessByUserID(business1.getUserID());
-        if(business != null){
-            business.setAddress(business1.getAddress().trim());
-            businessRepository.save(business);
-            return business;
-        }
-        else{
-            return null;
-        }
-    }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Business business = businessRepository.findBusinessByUserID(auth.getName());
 
-    public Business changeContact(Business business1) {
-        Business business = businessRepository.findBusinessByUserID(business1.getUserID());
-        if (business != null) {
-            business.setContactNo(business1.getContactNo());
-            businessRepository.save(business);
-            return business;
-        } else {
+        if(business == null){
             return null;
         }
-    }
 
-    public Business changePan(Business business1){
-        if(business1.getPan() == null || business1.getPan().trim() == ""){
-            return null;
+        if(request.getFirstName() != null && !request.getFirstName().trim().isEmpty()){
+            business.setFirstName(request.getFirstName());
         }
-        Business business = businessRepository.findBusinessByUserID(business1.getUserID());
-        if(business != null){
-            business.setPan(business1.getPan().trim());
-            businessRepository.save(business);
-            return business;
-        }
-        else{
-            return null;
-        }
-    }
 
-    public Business changeGst(Business business1){
-        if(business1.getGst() == null || business1.getGst().trim() == ""){
-            return null;
+        if(request.getLastName() != null && !request.getLastName().trim().isEmpty()){
+            business.setLastName(request.getLastName().trim());
         }
-        Business business = businessRepository.findBusinessByUserID(business1.getUserID());
-        if(business != null){
-            business.setGst(business1.getGst().trim());
-            businessRepository.save(business);
-            return business;
+
+        if(request.getPassword() != null && !request.getPassword().trim().isEmpty()){
+            business.setPassword(passwordEncoder.encode(request.getPassword()));
         }
-        else{
-            return null;
+
+        if(request.getEmail() != null && !request.getEmail().trim().isEmpty()){
+            business.setEmail(request.getEmail().trim());
         }
+
+        if(request.getAddress() != null && !request.getAddress().trim().isEmpty()){
+            business.setAddress(request.getAddress().trim());
+        }
+
+        if(request.getContactNo() != null){
+            business.setContactNo(request.getContactNo());
+        }
+
+        if(request.getAge() != null && request.getAge() >= 18){
+            business.setAge(request.getAge());
+        }
+
+        if(request.getPan() != null && !request.getPan().trim().isEmpty()){
+            business.setPan(request.getPan());
+        }
+
+        if(request.getGst() != null && !request.getGst().trim().isEmpty()){
+            business.setGst(request.getGst());
+        }
+
+        return businessRepository.save(business);
     }
 
     public String addService(String username, Services service){
