@@ -67,6 +67,7 @@ public class WebConfiguration {
         customerProvider.setUserDetailsService(customerDetailService);
         customerProvider.setPasswordEncoder(passwordEncoder());
 
+
         DaoAuthenticationProvider businessProvider = new DaoAuthenticationProvider();
         businessProvider.setUserDetailsService(businessDetailService);
         businessProvider.setPasswordEncoder(passwordEncoder());
