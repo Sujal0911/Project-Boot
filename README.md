@@ -1,1 +1,1 @@
-Use The Pom file given with the Code.
+Use The given Pom file.
