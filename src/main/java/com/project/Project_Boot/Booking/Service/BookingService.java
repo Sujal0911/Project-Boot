@@ -46,12 +46,13 @@ public class BookingService {
     }
 
     @Transactional
-    public double seeBooking(){
+    public Booking seeBooking(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         Booking booking = new Booking();
         booking.setCart(cartRepository.findCartByUserIdAndAvailable(auth.getName(), true));
+        booking.setTotal(total(booking.getCart()));
 
-        return total(booking.getCart());
+        return booking;
     }
 }

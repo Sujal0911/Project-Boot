@@ -39,4 +39,14 @@ public class CustomerUserController {
         return new ResponseEntity<>("Customer Not Found",HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("order-history")
+    public ResponseEntity<?> cartToOrderHistory(){
+        return new ResponseEntity<>(customerService.cartItemToOrderHistory(), HttpStatus.OK);
+    }
+
+    @GetMapping("past-orders")
+    public ResponseEntity<?> pastOrders(){
+        return ResponseEntity.ok(customerService.pastOrders());
+    }
+
 }

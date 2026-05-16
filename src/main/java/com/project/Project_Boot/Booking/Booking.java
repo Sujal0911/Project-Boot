@@ -17,10 +17,11 @@ import org.springframework.stereotype.Component;
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
     @OneToOne
     @JoinColumn(name = "Purchased_Items")
     private Cart cart;
+    private double total;
 
 }

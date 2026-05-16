@@ -63,10 +63,10 @@ public class CartService {
         while(l <= r){
             int mid = l + (r - l) / 2;
 
-            if(cart.getListCart().get(mid).getCartItemId().equals(cartItemID)){
+            if(cart.getListCart().get(mid).getId().equals(cartItemID)){
                 cart.getListCart().remove(mid);
                 break;
-            }else if(cart.getListCart().get(mid).getCartItemId() > cartItemID){
+            }else if(cart.getListCart().get(mid).getId() > cartItemID){
                 r = mid - 1;
             }
             else{

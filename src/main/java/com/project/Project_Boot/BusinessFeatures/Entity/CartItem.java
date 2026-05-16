@@ -11,7 +11,7 @@ public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long cartItemId;
+    private Long id;
     @Column(nullable = false)
     private Integer quantity;
     @Column(nullable = false)
