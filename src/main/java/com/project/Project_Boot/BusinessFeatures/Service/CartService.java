@@ -20,7 +20,7 @@ public class CartService {
     }
 
     @Transactional
-    public Cart addToCart(List<CartItem> cartItem) {
+    public Cart addToCart(List<CartItem> listCartItem) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Cart cart = cartRepository.findCartByUserIdAndAvailable(auth.getName(), true);
 
@@ -30,8 +30,14 @@ public class CartService {
             cart.setUserId(auth.getName());
         }
 
-        for(CartItem c : cartItem){
-            cart.getListCart().add(c);
+        for(CartItem c : listCartItem){
+            int isPresent = isPresent(cart.getListCart(), c.getProductId());
+            if(isPresent != -1){
+                cart.getListCart().get(isPresent).setQuantity(cart.getListCart().get(isPresent).getQuantity() + c.getQuantity());
+            }
+            else{
+                cart.getListCart().add(c);
+            }
         }
 
         cartRepository.save(cart);
@@ -77,5 +83,16 @@ public class CartService {
         cartRepository.save(cart);
 
         return "Deleted";
+    }
+
+    public int isPresent(List<CartItem> listCart, Long productId){
+        int i = 0;
+        while(i < listCart.size()){
+            if(listCart.get(i).getId().equals(productId)){
+                return i;
+            }
+            i++;
+        }
+        return -1;
     }
 }

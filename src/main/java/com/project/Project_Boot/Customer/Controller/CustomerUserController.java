@@ -1,5 +1,6 @@
 package com.project.Project_Boot.Customer.Controller;
 
+import com.project.Project_Boot.Booking.Service.BookingService;
 import com.project.Project_Boot.Customer.Customer;
 import com.project.Project_Boot.Customer.CustomerDTO;
 import com.project.Project_Boot.Customer.Service.CustomerService;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerUserController {
 
     private final CustomerService customerService;
+    private final BookingService bookingService;
 
-    public CustomerUserController(CustomerService customerService) {
+    public CustomerUserController(CustomerService customerService, BookingService bookingService) {
         this.customerService = customerService;
+        this.bookingService = bookingService;
     }
 
     @PostMapping("create-account")
@@ -47,6 +50,11 @@ public class CustomerUserController {
     @GetMapping("past-orders")
     public ResponseEntity<?> pastOrders(){
         return ResponseEntity.ok(customerService.pastOrders());
+    }
+
+    @GetMapping("all-services")
+    public ResponseEntity<?> allServices(){
+        return ResponseEntity.ok(bookingService.allServices());
     }
 
 }

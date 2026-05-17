@@ -10,10 +10,13 @@ import com.project.Project_Boot.BusinessFeatures.Entity.Product;
 import com.project.Project_Boot.BusinessFeatures.Repository.CartRepository;
 import com.project.Project_Boot.BusinessFeatures.Repository.ProductRepository;
 import com.project.Project_Boot.Customer.Repository.CustomerRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class BookingService {
@@ -54,5 +57,9 @@ public class BookingService {
         booking.setTotal(total(booking.getCart()));
 
         return booking;
+    }
+
+    public List<Product> allServices(){
+        return productRepository.findAllByAvailable(true, Pageable.ofSize(8));
     }
 }

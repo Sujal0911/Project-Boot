@@ -21,4 +21,5 @@ public class BookingController {
     public ResponseEntity<?> booking(){
             return new ResponseEntity<>(bookingService.seeBooking(), HttpStatus.OK);
     }
+
 }
