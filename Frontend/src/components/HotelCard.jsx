@@ -21,6 +21,7 @@ function HotelCard({ hotel, addToCart }) {
         <img
           src={hotel.image}
           alt={hotel.name}
+          loading="lazy"
           className="w-full h-[25vh] object-cover"
         />
 
@@ -84,4 +85,4 @@ function HotelCard({ hotel, addToCart }) {
   );
 }
 
-export default HotelCard;
+export default React.memo(HotelCard);

@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import HotelCard from "../components/HotelCard";
 import CartIcon from "../components/CartIcon";
 import { UserCircle2 } from "lucide-react";
+import Popup from "../components/Popup";
 
 function StaysPage() {
 
   const isLoggedIn = localStorage.getItem("auth");
 
   const navigate = useNavigate();
+
+
 
   const [city, setCity] = useState("");
 
@@ -19,6 +22,29 @@ function StaysPage() {
   const [page, setPage] = useState(0);
 
   const [totalPages, setTotalPages] = useState(0);
+
+    const [popup, setPopup] = useState({
+      show: false,
+      message: "",
+      type: "success",
+    });
+
+    const showPopup = (message, type = "success") => {
+
+    setPopup({
+      show: true,
+      message,
+      type,
+    });
+
+    setTimeout(() => {
+      setPopup({
+        show: false,
+        message: "",
+        type: "success",
+      });
+    }, 3000);
+  };
 
   // =========================================
   // FETCH PRODUCTS
@@ -36,7 +62,7 @@ function StaysPage() {
       const auth = localStorage.getItem("auth");
 
       const response = await fetch(
-        `http://localhost:8080/customer-user/all-hotels?page=${page}&size=12`,
+        `http://localhost:8080/customer-user/all-stays?page=${page}&size=12`,
         {
           method: "GET",
 
@@ -48,7 +74,7 @@ function StaysPage() {
 
       const data = await response.json();
 
-      console.log(data);
+      // console.log(data);
 
       setProducts(data.content || []);
 
@@ -81,7 +107,7 @@ function StaysPage() {
       const auth = localStorage.getItem("auth");
 
       const response = await fetch(
-        `http://localhost:8080/customer-user/search-hotels?city=${city}&page=0&size=12`,
+        `http://localhost:8080/customer-user/search-stays?city=${city}&page=0&size=12`,
         {
           method: "GET",
 
@@ -134,11 +160,11 @@ function StaysPage() {
 
       if (response.ok) {
 
-        alert("Added To Cart");
+        showPopup("Added To Cart");
 
       } else {
 
-        alert("Failed To Add");
+        showPopup("Failed To Add");
 
       }
 
@@ -154,6 +180,12 @@ function StaysPage() {
   return (
 
     <div className="min-h-screen bg-[#f7f7f7]">
+
+      <Popup
+  show={popup.show}
+  message={popup.message}
+  type={popup.type}
+/>
 
       {/* ========================================= */}
       {/* NAVBAR */}
@@ -356,12 +388,15 @@ function StaysPage() {
 
         {/* LOADING */}
         {loading ? (
-
-          <div className="text-center py-20 text-3xl font-semibold">
-            Loading stays...
-          </div>
-
-        ) : (
+  <div className="grid grid-cols-4 gap-8">
+    {[...Array(8)].map((_, i) => (
+      <div
+        key={i}
+        className="h-[350px] bg-gray-200 animate-pulse rounded-3xl"
+      ></div>
+    ))}
+  </div>
+) : (
 
           <>
             {/* GRID */}
@@ -378,8 +413,7 @@ function StaysPage() {
                     description: hotel.description,
                     rating: "4.8",
                     price: hotel.price,
-                    image:
-                      "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop",
+                    image:hotel.imageUrl,
                   }}
                   addToCart={addToCart}
                 />

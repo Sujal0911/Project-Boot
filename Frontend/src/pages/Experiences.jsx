@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import HotelCard from "../components/HotelCard";
 import CartIcon from "../components/CartIcon";
 import { UserCircle2 } from "lucide-react";
+import Popup from "../components/Popup";
 
 function ExperiencesPage() {
 
@@ -19,6 +20,29 @@ function ExperiencesPage() {
   const [page, setPage] = useState(0);
 
   const [totalPages, setTotalPages] = useState(0);
+
+  const [popup, setPopup] = useState({
+        show: false,
+        message: "",
+        type: "success",
+      });
+  
+      const showPopup = (message, type = "success") => {
+  
+      setPopup({
+        show: true,
+        message,
+        type,
+      });
+  
+      setTimeout(() => {
+        setPopup({
+          show: false,
+          message: "",
+          type: "success",
+        });
+      }, 3000);
+    };
 
   // =========================================
   // FETCH PRODUCTS
@@ -134,11 +158,11 @@ function ExperiencesPage() {
 
       if (response.ok) {
 
-        alert("Added To Cart");
+        showPopup("Added To Cart");
 
       } else {
 
-        alert("Failed To Add");
+        showPopup("Failed To Add");
 
       }
 
@@ -154,6 +178,12 @@ function ExperiencesPage() {
   return (
 
     <div className="min-h-screen bg-[#f7f7f7]">
+
+      <Popup
+  show={popup.show}
+  message={popup.message}
+  type={popup.type}
+/>
 
       {/* ========================================= */}
       {/* NAVBAR */}
@@ -375,9 +405,9 @@ function ExperiencesPage() {
                     description: hotel.description,
                     rating: "4.8",
                     price: hotel.price,
-                    image:
-                      "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop",
+                    image:hotel.imageUrl,
                   }}
+                  addToCart={addToCart}
                 />
 
               ))}

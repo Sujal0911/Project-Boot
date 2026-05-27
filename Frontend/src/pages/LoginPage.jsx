@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, ShieldCheck, BadgeCheck, Users } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
+import Popup from "../components/Popup";
 
 function LoginPage() {
 
@@ -12,6 +13,29 @@ function LoginPage() {
     userId: "",
     password: "",
   });
+
+    const [popup, setPopup] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showPopup = (message, type = "success") => {
+
+    setPopup({
+      show: true,
+      message,
+      type,
+    });
+
+    setTimeout(() => {
+      setPopup({
+        show: false,
+        message: "",
+        type: "success",
+      });
+    }, 3000);
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -58,19 +82,18 @@ function LoginPage() {
 
     if (response.ok) {
 
-      alert("Login Successful");
-
+      
       localStorage.setItem("auth", authString);
-
+      
       localStorage.setItem("userId", formData.userId);
-
+      
       console.log(await response.json());
-
-      navigate('/stays');
+      
+      navigate('/home');
 
     } else {
 
-      alert("Invalid Credentials");
+      showPopup("Invalid Credentials");
 
     }
 
@@ -219,6 +242,13 @@ function LoginPage() {
               >
                 Login
               </button>
+
+                <Popup
+                  show={popup.show}
+                  message={popup.message}
+                  type={popup.type}
+                />
+
             </form>
 
             {/* Signup */}

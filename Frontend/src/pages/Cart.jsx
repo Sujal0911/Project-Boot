@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Popup from "../components/Popup";
 
 import {
   MapPin,
@@ -27,6 +28,29 @@ function CartPage() {
     fetchCartItems();
   }, []);
 
+  const [popup, setPopup] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showPopup = (message, type = "success") => {
+
+    setPopup({
+      show: true,
+      message,
+      type,
+    });
+
+    setTimeout(() => {
+      setPopup({
+        show: false,
+        message: "",
+        type: "success",
+      });
+    }, 3000);
+  };
+
   const fetchCartItems = async () => {
 
     try {
@@ -46,7 +70,7 @@ function CartPage() {
 
       const data = await response.json();
 
-      console.log("FULL DATA:", data);
+      // console.log("FULL DATA:", data);
 
       setCartItems(data.products || []);
 
@@ -83,13 +107,13 @@ function CartPage() {
 
       if (response.ok) {
 
-        alert("Item Removed");
+        showPopup("Item Removed");
 
         fetchCartItems();
 
       } else {
 
-        alert("Failed to remove item");
+        showPopup("Failed to remove item");
 
       }
 
@@ -105,6 +129,12 @@ function CartPage() {
   return (
 
     <div className="h-screen overflow-hidden bg-[#f7f7f7]">
+
+      <Popup
+  show={popup.show}
+  message={popup.message}
+  type={popup.type}
+/>
 
       {/* NAVBAR */}
       <nav className="w-full bg-white border-b border-gray-200 px-6 md:px-10 py-5 flex items-center justify-between">

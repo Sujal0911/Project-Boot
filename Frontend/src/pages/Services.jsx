@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import HotelCard from "../components/HotelCard";
 import CartIcon from "../components/CartIcon";
 import { UserCircle2 } from "lucide-react";
+import Popup from "../components/Popup";
 
 function ServicesPage() {
 
@@ -21,6 +22,35 @@ function ServicesPage() {
   const [totalPages, setTotalPages] = useState(0);
 
   // =========================================
+  // POPUP STATE
+  // =========================================
+  const [popup, setPopup] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  // =========================================
+  // SHOW POPUP FUNCTION
+  // =========================================
+  const showPopup = (message, type = "success") => {
+
+    setPopup({
+      show: true,
+      message,
+      type,
+    });
+
+    setTimeout(() => {
+      setPopup({
+        show: false,
+        message: "",
+        type: "success",
+      });
+    }, 3000);
+  };
+
+  // =========================================
   // FETCH PRODUCTS
   // =========================================
   useEffect(() => {
@@ -30,6 +60,8 @@ function ServicesPage() {
   const fetchProducts = async () => {
 
     try {
+
+      setLoading(true);
 
       const auth = localStorage.getItem("auth");
 
@@ -48,15 +80,15 @@ function ServicesPage() {
 
       console.log(data);
 
-      setProducts(data.content);
+      setProducts(data.content || []);
 
-      setTotalPages(data.totalPages);
+      setTotalPages(data.totalPages || 0);
 
     } catch (error) {
 
       console.log(error);
 
-      alert("Failed to load stays");
+      showPopup("Failed To Load Services", "error");
 
     } finally {
 
@@ -66,7 +98,7 @@ function ServicesPage() {
   };
 
   // =========================================
-  // SEARCH HOTELS
+  // SEARCH SERVICES
   // =========================================
   const searchHotels = async () => {
 
@@ -101,7 +133,7 @@ function ServicesPage() {
 
       console.log(error);
 
-      alert("Search failed");
+      showPopup("Search Failed", "error");
 
     } finally {
 
@@ -132,11 +164,11 @@ function ServicesPage() {
 
       if (response.ok) {
 
-        alert("Added To Cart");
+        showPopup("Added To Cart");
 
       } else {
 
-        alert("Failed To Add");
+        showPopup("Failed To Add", "error");
 
       }
 
@@ -144,7 +176,7 @@ function ServicesPage() {
 
       console.log(error);
 
-      alert("Server Error");
+      showPopup("Server Error", "error");
 
     }
   };
@@ -153,10 +185,7 @@ function ServicesPage() {
 
     <div className="min-h-screen bg-[#f7f7f7]">
 
-      {/* ========================================= */}
       {/* NAVBAR */}
-      {/* ========================================= */}
-
       <div className="bg-white px-8 py-5 shadow-sm flex items-center justify-between">
 
         {/* LOGO */}
@@ -185,19 +214,17 @@ function ServicesPage() {
             Home
           </span>
 
-          <span onClick={() => navigate("/stays")}
+          <span
+            onClick={() => navigate("/stays")}
             className="hover:text-green-800 cursor-pointer"
           >
             Stays
           </span>
 
-          {/* <span
-          onClick={() => navigate("/services")} className="cursor-pointer hover:text-green-800">
-            Services
-          </span> */}
-
-          <span 
-          onClick={() => navigate("/experiences")} className="cursor-pointer hover:text-green-800">
+          <span
+            onClick={() => navigate("/experiences")}
+            className="cursor-pointer hover:text-green-800"
+          >
             Experiences
           </span>
 
@@ -206,53 +233,49 @@ function ServicesPage() {
         {/* RIGHT */}
         <div className="flex items-center gap-5">
 
-  {!isLoggedIn ? (
-    <>
-      <button
-        onClick={() => navigate("/login")}
-        className="hidden md:block font-medium cursor-pointer"
-      >
-        Login
-      </button>
+          {!isLoggedIn ? (
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="hidden md:block font-medium cursor-pointer"
+              >
+                Login
+              </button>
 
-      <button
-        onClick={() => navigate('/signup')}
-        className="cursor-pointer bg-green-900 text-white px-5 py-3 rounded-xl font-semibold hover:bg-green-800 transition"
-      >
-        Sign Up
-      </button>
-    </>
-  ) : (
-    <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate('/signup')}
+                className="cursor-pointer bg-green-900 text-white px-5 py-3 rounded-xl font-semibold hover:bg-green-800 transition"
+              >
+                Sign Up
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center gap-4">
 
-        <CartIcon />
+              <CartIcon />
 
-      <UserCircle2
-        size={30}
-        className="text-green-900"
-        // onClick={() => navigate("/profile")}
-      />
+              <UserCircle2
+                size={30}
+                className="text-green-900"
+              />
 
-      <button
-        onClick={() => {
-          localStorage.removeItem("auth");
-          navigate("/login");
-        }}
-        className="cursor-pointer bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl"
-      >
-        Logout
-      </button>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("auth");
+                  navigate("/login");
+                }}
+                className="cursor-pointer bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl"
+              >
+                Logout
+              </button>
 
-    </div>
-  )}
+            </div>
+          )}
 
-</div>
+        </div>
       </div>
 
-      {/* ========================================= */}
       {/* SEARCH */}
-      {/* ========================================= */}
-
       <div className="px-8 mt-8">
 
         <div className="bg-white rounded-3xl shadow-lg p-5 flex items-center gap-4">
@@ -282,10 +305,7 @@ function ServicesPage() {
         </div>
       </div>
 
-      {/* ========================================= */}
       {/* HERO */}
-      {/* ========================================= */}
-
       <div className="px-8 py-10">
 
         <div
@@ -296,14 +316,12 @@ function ServicesPage() {
           }}
         >
 
-          {/* OVERLAY */}
           <div className="absolute inset-0 bg-black/40"></div>
 
-          {/* CONTENT */}
           <div className="relative z-10 max-w-3xl text-white">
 
             <p className="text-xl mb-4 font-medium">
-              Discover Variety of Services 
+              Discover Variety of Services
             </p>
 
             <h1 className="text-6xl font-bold leading-tight mb-5">
@@ -321,13 +339,9 @@ function ServicesPage() {
         </div>
       </div>
 
-      {/* ========================================= */}
-      {/* PRODUCTS SECTION */}
-      {/* ========================================= */}
-
+      {/* PRODUCTS */}
       <div className="px-8 pb-14">
 
-        {/* TITLE */}
         <div className="flex items-center justify-between mb-10">
 
           <div>
@@ -335,10 +349,6 @@ function ServicesPage() {
             <p className="text-green-900 font-semibold mb-2">
               Available Services
             </p>
-
-            {/* <h2 className="text-5xl font-bold">
-              Explore
-            </h2> */}
 
           </div>
 
@@ -372,9 +382,9 @@ function ServicesPage() {
                     description: hotel.description,
                     rating: "4.8",
                     price: hotel.price,
-                    image:
-                      "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop",
+                    image:hotel.imageUrl,
                   }}
+                  addToCart={addToCart}
                 />
 
               ))}
@@ -409,8 +419,16 @@ function ServicesPage() {
 
         )}
       </div>
+
+      {/* POPUP */}
+      <Popup
+        show={popup.show}
+        message={popup.message}
+        type={popup.type}
+      />
+
     </div>
   );
 }
 
-  export default ServicesPage;
+export default ServicesPage;
